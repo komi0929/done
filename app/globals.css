@@ -1,226 +1,281 @@
 @import "tailwindcss";
 
 :root {
-  /* Retro Future Palette */
-  --terminal-bg: #050505;
-  --terminal-grid: #1a1a1a;
-  --neon-green: #00ff41;
-  --neon-pink: #ff00ff;
-  --neon-blue: #00ffff;
-  --neon-yellow: #fdfd00;
-
-  --scanline-color: rgba(0, 0, 0, 0.5);
-  --glass-reflection: rgba(255, 255, 255, 0.05);
+    /* Common Semantics */
+    --transition-speed: 0.3s;
 }
 
-@theme inline {
-  --color-terminal-bg: var(--terminal-bg);
-  --color-terminal-grid: var(--terminal-grid);
-  --color-neon-green: var(--neon-green);
-  --color-neon-pink: var(--neon-pink);
-  --color-neon-blue: var(--neon-blue);
-  --color-neon-yellow: var(--neon-yellow);
+/* --- Theme: DEFAULT (Original Simple) --- */
+[data-theme='default'] {
+    --bg-color: #f7f7f7;
+    --text-color: #333333;
+    --grid-color: #e5e5e5;
+    --accent-primary: #000000;
+    --accent-secondary: #555555;
+
+    --font-family: var(--font-outfit), sans-serif;
+    --border-style: solid;
+    --border-width: 1px;
+    --border-radius: 8px;
+
+    --crt-opacity: 0;
+    --text-glow: none;
+    --box-shadow-glow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+
+    --window-bg: #ffffff;
 }
+
+/* --- Theme: RETRO (Cyber Terminal) --- */
+[data-theme='retro'] {
+    --bg-color: #050505;
+    --text-color: #00ff41;
+    --grid-color: #1a1a1a;
+    --accent-primary: #ff00ff;
+    /* Neon Pink */
+    --accent-secondary: #00ffff;
+    /* Neon Cyan */
+
+    --font-family: 'JetBrains Mono', monospace;
+    --border-style: solid;
+    --border-width: 1px;
+    --border-radius: 0px;
+
+    --crt-opacity: 1;
+    --text-glow: 0 0 5px rgba(0, 255, 65, 0.5);
+    --box-shadow-glow: 0 0 10px rgba(0, 255, 65, 0.2);
+
+    --window-bg: rgba(0, 5, 0, 0.8);
+}
+
 
 body {
-  background-color: var(--terminal-bg);
-  background-image:
-    linear-gradient(var(--terminal-grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--terminal-grid) 1px, transparent 1px);
-  background-size: 30px 30px;
-  color: var(--neon-green);
-  font-family: 'JetBrains Mono', monospace;
-  overflow-x: hidden;
-  text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
-  /* Subtle glow for all text */
+    background-color: var(--bg-color);
+    background-image:
+        linear-gradient(var(--grid-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+    background-size: 30px 30px;
+    color: var(--text-color);
+    font-family: var(--font-family);
+    overflow-x: hidden;
+    text-shadow: var(--text-glow);
+    transition: background-color 0.3s, color 0.3s;
 }
 
-/* --- CRT Effects --- */
-
-@keyframes scanline {
-  0% {
-    transform: translateY(0);
-  }
-
-  100% {
-    transform: translateY(100vh);
-  }
-}
-
-@keyframes flicker {
-  0% {
-    opacity: 0.97;
-  }
-
-  5% {
-    opacity: 0.95;
-  }
-
-  10% {
-    opacity: 0.9;
-  }
-
-  15% {
-    opacity: 0.95;
-  }
-
-  20% {
-    opacity: 0.99;
-  }
-
-  50% {
-    opacity: 0.95;
-  }
-
-  55% {
-    opacity: 0.9;
-  }
-
-  60% {
-    opacity: 0.95;
-  }
-
-  80% {
-    opacity: 0.98;
-  }
-
-  100% {
-    opacity: 0.97;
-  }
-}
-
+/* --- CRT Effects (Only visible in retro theme) --- */
 .crt-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-  background-size: 100% 2px, 3px 100%;
-  pointer-events: none;
-  z-index: 9999;
-  animation: flicker 0.15s infinite;
+    opacity: var(--crt-opacity);
+    pointer-events: none;
+    transition: opacity 0.5s;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    background-size: 100% 2px, 3px 100%;
+    z-index: 9999;
+    animation: flicker 0.15s infinite;
 }
 
 .crt-overlay::before {
-  content: " ";
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-  z-index: 2;
-  background-size: 100% 2px, 3px 100%;
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    z-index: 2;
+    background-size: 100% 2px, 3px 100%;
 }
 
 .crt-overlay::after {
-  content: " ";
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  background: rgba(18, 16, 16, 0.1);
-  opacity: 0;
-  z-index: 2;
-  pointer-events: none;
-  animation: scanline 10s linear infinite;
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: rgba(18, 16, 16, 0.1);
+    opacity: 0;
+    z-index: 2;
+    pointer-events: none;
+    animation: scanline 10s linear infinite;
+}
+
+@keyframes scanline {
+    0% {
+        transform: translateY(0);
+    }
+
+    100% {
+        transform: translateY(100vh);
+    }
+}
+
+@keyframes flicker {
+    0% {
+        opacity: 0.97;
+    }
+
+    5% {
+        opacity: 0.95;
+    }
+
+    10% {
+        opacity: 0.9;
+    }
+
+    15% {
+        opacity: 0.95;
+    }
+
+    20% {
+        opacity: 0.99;
+    }
+
+    50% {
+        opacity: 0.95;
+    }
+
+    55% {
+        opacity: 0.9;
+    }
+
+    60% {
+        opacity: 0.95;
+    }
+
+    80% {
+        opacity: 0.98;
+    }
+
+    100% {
+        opacity: 0.97;
+    }
 }
 
 /* --- Glitch Effects --- */
 @keyframes glitch-skew {
-  0% {
-    transform: skew(0deg);
-  }
+    0% {
+        transform: skew(0deg);
+    }
 
-  20% {
-    transform: skew(-2deg);
-  }
+    20% {
+        transform: skew(-2deg);
+    }
 
-  40% {
-    transform: skew(2deg);
-  }
+    40% {
+        transform: skew(2deg);
+    }
 
-  60% {
-    transform: skew(-1deg);
-  }
+    60% {
+        transform: skew(-1deg);
+    }
 
-  80% {
-    transform: skew(1deg);
-  }
+    80% {
+        transform: skew(1deg);
+    }
 
-  100% {
-    transform: skew(0deg);
-  }
+    100% {
+        transform: skew(0deg);
+    }
 }
 
 .glitch-hover:hover {
-  animation: glitch-skew 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
-  color: var(--neon-pink);
-  text-shadow: 2px 0 var(--neon-blue), -2px 0 var(--neon-yellow);
+    animation: glitch-skew 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+    /* Colors managed by accent vars now, but keeping hardcoded fallbacks if needed or using vars */
+    color: var(--accent-primary);
+    text-shadow: 2px 0 var(--accent-secondary), -2px 0 var(--accent-primary);
 }
 
-/* --- UI Component Styles --- */
+/* --- UI Component Utilities (Theme Aware) --- */
 
 .terminal-box {
-  background: rgba(0, 5, 0, 0.8);
-  border: 1px solid var(--neon-green);
-  box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
-  position: relative;
+    background: var(--window-bg);
+    border-width: var(--border-width);
+    border-style: var(--border-style);
+    border-color: var(--text-color);
+    /* Default border color */
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow-glow);
+    position: relative;
+    transition: all 0.3s;
 }
 
-.terminal-box::before {
-  /* Corner markings */
-  content: "";
-  position: absolute;
-  top: -1px;
-  left: -1px;
-  right: -1px;
-  bottom: -1px;
-  background:
-    linear-gradient(to right, var(--neon-green) 2px, transparent 2px) 0 0,
-    linear-gradient(to right, var(--neon-green) 2px, transparent 2px) 0 100%,
-    linear-gradient(to left, var(--neon-green) 2px, transparent 2px) 100% 0,
-    linear-gradient(to left, var(--neon-green) 2px, transparent 2px) 100% 100%,
-    linear-gradient(to bottom, var(--neon-green) 2px, transparent 2px) 0 0,
-    linear-gradient(to bottom, var(--neon-green) 2px, transparent 2px) 100% 0,
-    linear-gradient(to top, var(--neon-green) 2px, transparent 2px) 0 100%,
-    linear-gradient(to top, var(--neon-green) 2px, transparent 2px) 100% 100%;
-  background-size: 10px 10px;
-  background-repeat: no-repeat;
-  pointer-events: none;
+/* Corner markings only on Retro */
+[data-theme='retro'] .terminal-box::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
+    background:
+        linear-gradient(to right, var(--text-color) 2px, transparent 2px) 0 0,
+        linear-gradient(to right, var(--text-color) 2px, transparent 2px) 0 100%,
+        linear-gradient(to left, var(--text-color) 2px, transparent 2px) 100% 0,
+        linear-gradient(to left, var(--text-color) 2px, transparent 2px) 100% 100%,
+        linear-gradient(to bottom, var(--text-color) 2px, transparent 2px) 0 0,
+        linear-gradient(to bottom, var(--text-color) 2px, transparent 2px) 100% 0,
+        linear-gradient(to top, var(--text-color) 2px, transparent 2px) 0 100%,
+        linear-gradient(to top, var(--text-color) 2px, transparent 2px) 100% 100%;
+    background-size: 10px 10px;
+    background-repeat: no-repeat;
+    pointer-events: none;
 }
 
 .terminal-input {
-  background: transparent;
-  border: none;
-  color: var(--neon-green);
-  font-family: 'JetBrains Mono', monospace;
-  outline: none;
+    background: transparent;
+    border: none;
+    color: var(--text-color);
+    font-family: inherit;
+    outline: none;
 }
 
 .terminal-input::placeholder {
-  color: rgba(0, 255, 65, 0.3);
+    color: var(--text-color);
+    opacity: 0.3;
 }
 
 .blinking-cursor::after {
-  content: "█";
-  animation: blink 1s step-end infinite;
-  color: var(--neon-green);
-  margin-left: 5px;
+    content: "█";
+    animation: blink 1s step-end infinite;
+    color: var(--text-color);
+    margin-left: 5px;
+    /* Hide cursor in default mode if preferred, or keep it */
+}
+
+/* In default mode, maybe block cursor is too much? keeping for now as 'terminal' feel */
+[data-theme='default'] .blinking-cursor::after {
+    content: "|";
+    animation: blink 1s step-end infinite;
 }
 
 @keyframes blink {
 
-  0%,
-  100% {
-    opacity: 1;
-  }
+    0%,
+    100% {
+        opacity: 1;
+    }
 
-  50% {
-    opacity: 0;
-  }
+    50% {
+        opacity: 0;
+    }
+}
+
+/* Standard Scrollbar for all */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--grid-color);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--text-color);
+    border-radius: var(--border-radius);
 }

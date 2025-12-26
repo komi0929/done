@@ -11,6 +11,7 @@ export default function PhysicsStack() {
     const renderRef = useRef<Matter.Render | null>(null);
 
     const completedTasks = useGameStore((state) => state.completedTasks);
+    const theme = useGameStore((state) => state.theme);
     const spawnedTaskIdsRef = useRef<Set<string>>(new Set());
 
     // Helper to add block - tracking refs
@@ -25,6 +26,12 @@ export default function PhysicsStack() {
         const width = 120;
         const height = Math.max(30, (task.totalDuration / 60) * 10);
 
+        // Styling based on theme (captured at spawn time, but we'll try to make it dynamic if possible, 
+        // or just accept that spawned blocks keep their style until reload. 
+        // Better: store the body references and update them when theme changes)
+        // For now, simpler approach: Spawn with current theme styles.
+        const isRetro = theme === 'retro';
+
         const body = Bodies.rectangle(
             canvas.width / 2 + (Math.random() - 0.5) * 40,
             -height - 50,
@@ -34,10 +41,10 @@ export default function PhysicsStack() {
                 restitution: 0.2,
                 friction: 0.8,
                 angle: (Math.random() - 0.5) * 0.1,
-                chamfer: { radius: 0 },
+                chamfer: { radius: isRetro ? 0 : 4 }, // Rounded for default
                 render: {
-                    fillStyle: 'transparent', // Wireframe style
-                    strokeStyle: '#00ff41',
+                    fillStyle: isRetro ? 'transparent' : '#ffffff',
+                    strokeStyle: isRetro ? '#00ff41' : '#333333',
                     lineWidth: 2,
                 },
                 // @ts-ignore
@@ -48,7 +55,52 @@ export default function PhysicsStack() {
         );
 
         Composite.add(engineRef.current.world, body);
+    }, [theme]); // Re-create when theme changes? No, useCallback dependency
+
+    // Update existing bodies/render when theme changes
+    useEffect(() => {
+        if (!engineRef.current || !renderRef.current) return;
+
+        const isRetro = theme === 'retro';
+        const Bodies = Matter.Composite.allBodies(engineRef.current.world);
+
+        // Update Render config
+        // @ts-ignore
+        renderRef.current.options.background = 'transparent';
+        // @ts-ignore
+        renderRef.current.options.wireframes = false;
+
+        Bodies.forEach(body => {
+            if (body.label !== 'Rectangle Body') return; // Skip walls if they are labelled differently (walls usually Rectangle Body too)
+
+            // Check if it's a wall (static) or block
+            if (body.isStatic) {
+                body.render.strokeStyle = isRetro ? '#1A1A1A' : '#e5e5e5';
+                return;
+            }
+
+            // It's a task block
+            body.render.fillStyle = isRetro ? 'transparent' : '#ffffff';
+            body.render.strokeStyle = isRetro ? '#00ff41' : '#333333';
+            // Matter.js doesn't easily update chamfer after creation, so we skip that for existing blocks
+        });
+
+    }, [theme]);
+
+    // ... Initialization useEffect ... (Adding theme dependency to update text color in afterRender)
+
+    useEffect(() => {
+        if (!containerRef.current || !canvasRef.current || engineRef.current) return;
+        // ... (existing init logic, but we need to ensure the render loop uses current theme for text)
+        // Since init runs once, we'll attach the event listener here. 
+        // But the event listener needs access to 'theme'. 
+        // We might need to store theme in a ref to access it inside the loop without re-binding.
+
     }, []);
+
+    // Better approach for afterRender: use a ref for theme
+    const themeRef = useRef(theme);
+    useEffect(() => { themeRef.current = theme; }, [theme]);
 
     // Initialization
     useEffect(() => {
@@ -77,7 +129,7 @@ export default function PhysicsStack() {
                 width: clientWidth,
                 height: clientHeight,
                 background: 'transparent',
-                wireframes: false, // We simulate wireframes with fillStyle: transparent + strokeStyle
+                wireframes: false,
                 showAngleIndicator: false,
             }
         });
@@ -88,7 +140,7 @@ export default function PhysicsStack() {
             isStatic: true,
             render: {
                 fillStyle: 'transparent',
-                strokeStyle: '#1A1A1A',
+                strokeStyle: themeRef.current === 'retro' ? '#1A1A1A' : '#e5e5e5',
                 lineWidth: 1
             }
         };
@@ -117,26 +169,42 @@ export default function PhysicsStack() {
         Events.on(render, 'afterRender', function () {
             const context = render.context;
             const allBodies = Composite.allBodies(world);
+            const isRetro = themeRef.current === 'retro';
 
             context.textAlign = "center";
             context.textBaseline = "middle";
 
             allBodies.forEach((body) => {
-                if (body.label && body.label !== 'Rectangle Body') {
-                    const taskName = (body as any).plugin?.taskName;
-                    if (taskName) {
-                        context.save();
-                        context.translate(body.position.x, body.position.y);
-                        context.rotate(body.angle);
+                if (body.label && body.label !== 'Rectangle Body') { // Matter.js default label
+                    // Actually walls are Rectangle Body too. We identify tasks by plugin.taskName
+                    // Wait, checking creation code: const body = Bodies.rectangle(...)
+                    // It has plugin.taskName
+                }
 
-                        context.font = "bold 10px 'JetBrains Mono', monospace";
-                        context.fillStyle = "#00ff41"; // Neon Green text
+                // Better check:
+                const taskName = (body as any).plugin?.taskName;
+                if (taskName) {
+                    context.save();
+                    context.translate(body.position.x, body.position.y);
+                    context.rotate(body.angle);
+
+                    context.font = isRetro
+                        ? "bold 10px 'JetBrains Mono', monospace"
+                        : "bold 10px 'Outfit', sans-serif";
+
+                    context.fillStyle = isRetro ? "#00ff41" : "#333333";
+
+                    if (isRetro) {
                         context.shadowColor = "#00ff41";
                         context.shadowBlur = 4;
-                        context.fillText(taskName, 0, 0);
-
-                        context.restore();
+                    } else {
+                        context.shadowColor = "transparent";
+                        context.shadowBlur = 0;
                     }
+
+                    context.fillText(taskName, 0, 0);
+
+                    context.restore();
                 }
             });
         });
@@ -167,9 +235,11 @@ export default function PhysicsStack() {
         });
     }, [completedTasks, addTaskBlock]);
 
+    // Resize Handler (Optional to handle window resize for Matter.js)
+    // ...
+
     return (
-        <div ref={containerRef} className="relative w-full h-full bg-[rgba(0,10,0,0.2)] border border-[var(--terminal-grid)] overflow-hidden">
-            {/* Overlay grid pattern via CSS if needed, but simple transparent is fine */}
+        <div ref={containerRef} className="relative w-full h-full border border-[var(--grid-color)] overflow-hidden bg-[var(--bg-color)]/10 transition-colors">
             <canvas ref={canvasRef} className="block w-full h-full" />
         </div>
     );

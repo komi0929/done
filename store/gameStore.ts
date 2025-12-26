@@ -30,11 +30,13 @@ interface GameState {
     // Autocomplete History
     projectHistory: string[];
     categoryHistory: string[];
+    theme: 'default' | 'retro';
 
     // Actions
     startNewTask: (name: string, project: string, category: string) => void;
     resumeTask: (taskId: string) => void;
     finishCurrentTask: () => void;
+    toggleTheme: () => void;
     pauseCurrentTask: () => void; // Helper to move active to queue
 }
 
@@ -46,6 +48,7 @@ export const useGameStore = create<GameState>()(
             completedTasks: [],
             projectHistory: [],
             categoryHistory: [],
+            theme: 'retro', // Default to retro initially
 
             startNewTask: (name: string, project: string, category: string) => {
                 const { activeTask, pauseCurrentTask, projectHistory, categoryHistory } = get();
@@ -57,7 +60,7 @@ export const useGameStore = create<GameState>()(
 
                 // Start new active task
                 const newTask: ActiveTask = {
-                    id: crypto.randomUUID(),
+                    id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2) + Date.now().toString(36),
                     name,
                     project,
                     category,
@@ -151,7 +154,9 @@ export const useGameStore = create<GameState>()(
                     completedTasks: [...completedTasks, completed],
                     activeTask: null,
                 });
-            }
+            },
+
+            toggleTheme: () => set((state) => ({ theme: state.theme === 'retro' ? 'default' : 'retro' })),
         }),
         {
             name: 'done-os-storage-v2', // Versioned up storage
