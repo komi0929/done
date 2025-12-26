@@ -6,7 +6,7 @@ import { useGameStore } from '@/store/gameStore';
 export default function TaskInput() {
     const [input, setInput] = useState('');
     const [showSuggestions, setShowSuggestions] = useState(false);
-    const startTask = useGameStore((state) => state.startTask);
+    const startNewTask = useGameStore((state) => state.startNewTask);
     const completedTasks = useGameStore((state) => state.completedTasks);
 
     // Unique history
@@ -19,13 +19,13 @@ export default function TaskInput() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!input.trim()) return;
-        startTask(input);
+        startNewTask(input, '', '');
         setInput('');
         setShowSuggestions(false);
     };
 
     const handleSelect = (val: string) => {
-        startTask(val);
+        startNewTask(val, '', '');
         setInput('');
         setShowSuggestions(false);
     };
