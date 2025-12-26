@@ -4,9 +4,12 @@ import { useEffect, useState } from 'react';
 import { useGameStore } from '@/store/gameStore';
 
 export default function Timer() {
-    const { currentTask, startTime, finishTask } = useGameStore();
+    const activeTask = useGameStore((state) => state.activeTask);
+    const finishCurrentTask = useGameStore((state) => state.finishCurrentTask);
     const [elapsed, setElapsed] = useState(0);
     const [showSwitchModal, setShowSwitchModal] = useState(false);
+
+    const startTime = activeTask?.startTime;
 
     useEffect(() => {
         if (!startTime) return;
@@ -65,7 +68,7 @@ export default function Timer() {
                     </h2>
 
                     <h1 className="text-4xl md:text-6xl font-black mb-8 border-b-4 border-black pb-4 w-full">
-                        {currentTask}
+                        {activeTask?.name}
                     </h1>
 
                     <div className="text-[12vw] md:text-9xl font-mono font-bold tracking-tighter tabular-nums mb-12 text-[var(--foreground)]">
@@ -73,7 +76,7 @@ export default function Timer() {
                     </div>
 
                     <button
-                        onClick={finishTask}
+                        onClick={finishCurrentTask}
                         className="group relative px-12 py-4 bg-transparent border-2 border-black overflow-hidden"
                     >
                         <div className="absolute inset-0 w-full h-full bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-200 ease-out"></div>
@@ -112,7 +115,7 @@ export default function Timer() {
                                     CANCEL
                                 </button>
                                 <button
-                                    onClick={finishTask}
+                                    onClick={finishCurrentTask}
                                     className="px-6 py-2 bg-[var(--accent-magenta)] text-white border border-black hover:opacity-90"
                                 >
                                     CONFIRM
