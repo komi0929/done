@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import TaskController from "@/components/TaskController";
 import TaskQueue from "@/components/TaskQueue";
