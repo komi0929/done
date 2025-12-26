@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --background: #F5F5FA;
-  /* Light Lavender/Gray */
+  --background: #f5f5f7;
   --foreground: #1A1A1A;
   --accent-cyan: #00FFFF;
   --accent-magenta: #FF00FF;
   --window-bg: #FFFFFF;
   --window-border: #1A1A1A;
+  --neon-yellow: #CCFF00;
 }
 
 @theme inline {
@@ -15,7 +15,6 @@
   --color-foreground: var(--foreground);
   --color-accent-cyan: var(--accent-cyan);
   --color-accent-magenta: var(--accent-magenta);
-
   --font-mono: var(--font-mono);
 }
 
@@ -23,14 +22,36 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-mono), monospace;
-  /* Default to Mono for OS feel */
   overflow: hidden;
-  background-image:
-    linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
-  background-size: 40px 40px;
-  /* Grid Pattern */
   text-transform: uppercase;
+}
+
+/* Page Transition Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* Pill Header Style */
+.pill-header {
+  border: 1px solid #000;
+  padding: 12px 24px;
+  border-radius: 50px;
+  background: white;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
 }
 
 /* OS Window Utility */
@@ -55,6 +76,89 @@ body {
 
 .os-content {
   padding: 1rem;
+}
+
+/* Polaroid Card Style */
+.polaroid-card {
+  background: white;
+  padding: 15px 15px 45px 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+}
+
+.polaroid-card:hover {
+  transform: translateY(-10px) rotate(2deg);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+.polaroid-card::after {
+  content: '';
+  position: absolute;
+  bottom: 12px;
+  left: 15px;
+  right: 15px;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* 3D Wave Grid */
+.wave-grid-container {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #f5f5f7 0%, #e8e8ea 100%);
+}
+
+.wave-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.08) 1px, transparent 1px);
+  background-size: 30px 30px;
+  transform: perspective(500px) rotateX(60deg);
+  transform-origin: center bottom;
+}
+
+@keyframes waveRipple {
+  0% {
+    transform: perspective(500px) rotateX(60deg) translateZ(0);
+  }
+
+  50% {
+    transform: perspective(500px) rotateX(60deg) translateZ(10px);
+  }
+
+  100% {
+    transform: perspective(500px) rotateX(60deg) translateZ(0);
+  }
+}
+
+.wave-grid.ripple {
+  animation: waveRipple 1s ease-out;
+}
+
+/* Ripple Effect Circle */
+@keyframes rippleExpand {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(4);
+    opacity: 0;
+  }
+}
+
+.ripple-circle {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: rippleExpand 1.5s ease-out forwards;
 }
 
 /* Custom Utilities */
@@ -87,7 +191,7 @@ body {
   box-shadow: 0 0 0 2px rgba(255, 0, 255, 0.1);
 }
 
-/* Legacy Neo-Brutalism variable (for blocks using --neon-yellow) */
-:root {
-  --neon-yellow: #CCFF00;
+/* Smooth Button Transitions */
+button {
+  transition: all 0.2s ease;
 }
