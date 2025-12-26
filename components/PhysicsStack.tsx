@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 import Matter from 'matter-js';
-import { useGameStore, Task } from '@/store/gameStore';
+import { useGameStore, CompletedTask } from '@/store/gameStore';
 
 export default function PhysicsStack() {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -14,7 +14,7 @@ export default function PhysicsStack() {
     const spawnedTaskIdsRef = useRef<Set<string>>(new Set());
 
     // Helper to add block - tracking refs
-    const addTaskBlock = useCallback((task: Task) => {
+    const addTaskBlock = useCallback((task: CompletedTask) => {
         if (!engineRef.current || !renderRef.current) return;
 
         const Bodies = Matter.Bodies;
