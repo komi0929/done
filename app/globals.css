@@ -1,26 +1,93 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #F5F5FA;
+  /* Light Lavender/Gray */
+  --foreground: #1A1A1A;
+  --accent-cyan: #00FFFF;
+  --accent-magenta: #FF00FF;
+  --window-bg: #FFFFFF;
+  --window-border: #1A1A1A;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-accent-cyan: var(--accent-cyan);
+  --color-accent-magenta: var(--accent-magenta);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-mono: var(--font-mono);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-mono), monospace;
+  /* Default to Mono for OS feel */
+  overflow: hidden;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+  /* Grid Pattern */
+  text-transform: uppercase;
+}
+
+/* OS Window Utility */
+.os-window {
+  background: var(--window-bg);
+  border: 1px solid var(--window-border);
+  box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.os-title-bar {
+  background: var(--window-border);
+  color: white;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.os-content {
+  padding: 1rem;
+}
+
+/* Custom Utilities */
+.barcode-strip {
+  height: 20px;
+  background-image: linear-gradient(90deg,
+      #000 0%, #000 5%,
+      transparent 5%, transparent 10%,
+      #000 10%, #000 12%,
+      transparent 12%, transparent 15%,
+      #000 15%, #000 30%,
+      transparent 30%, transparent 40%,
+      #000 40%, #000 45%,
+      transparent 45%, transparent 55%,
+      #000 55%, #000 60%);
+  background-size: 100% 100%;
+}
+
+.os-input {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--window-border);
+  background: white;
+  font-family: var(--font-mono), monospace;
+  outline: none;
+  transition: border-color 0.1s, box-shadow 0.1s;
+}
+
+.os-input:focus {
+  border-color: var(--accent-magenta);
+  box-shadow: 0 0 0 2px rgba(255, 0, 255, 0.1);
+}
+
+/* Legacy Neo-Brutalism variable (for blocks using --neon-yellow) */
+:root {
+  --neon-yellow: #CCFF00;
 }

@@ -1,65 +1,103 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useState } from "react";
+import TaskController from "@/components/TaskController";
+import TaskQueue from "@/components/TaskQueue";
+import PhysicsStack from "@/components/PhysicsStack";
+import SummaryModal from "@/components/SummaryModal";
+import AuthButton from "@/components/AuthButton";
+import { useGameStore } from "@/store/gameStore";
 
 export default function Home() {
+  const [mounted, setMounted] = useState(false);
+  const [showSummary, setShowSummary] = useState(false);
+  const activeTask = useGameStore((state) => state.activeTask);
+
+  useEffect(() => {
+    setMounted(true);
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = '';
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
+
+  if (!mounted) return null;
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <main className="w-full h-screen overflow-y-auto flex flex-col bg-[var(--background)]">
+
+      {/* 1. Status Bar / Header */}
+      <header className="h-12 bg-white border-b border-gray-300 flex items-center justify-between px-6 shrink-0 z-20 sticky top-0">
+        <div className="flex items-center gap-4">
+          <h1 className="font-black italic tracking-tighter text-xl bg-black text-white px-2 transform -rotate-2">
+            DONE!!!
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+          <span className="text-xs font-mono text-gray-400">HIERARCHY TASK LOGGER</span>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        <div className="flex items-center gap-4">
+          {activeTask && (
+            <span className="text-xs font-mono font-bold animate-pulse text-[var(--accent-magenta)]">
+              ● RECORDING
+            </span>
+          )}
+          <AuthButton />
+          <button
+            onClick={() => setShowSummary(true)}
+            className="bg-[var(--accent-magenta)] text-white text-xs font-bold px-4 py-2 rounded-sm hover:brightness-110 transition-all font-mono"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            DAILY REPORT
+          </button>
         </div>
-      </main>
-    </div>
+      </header>
+
+      {/* 2. Main 3-Column Grid (Expanded Left: 2fr 1fr 1fr) */}
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr] gap-6 p-6 min-h-0">
+
+        {/* LEFT: Task Controller (Input & Active Timer) */}
+        <section className="flex flex-col h-full min-h-0 overflow-y-auto">
+          <div className="mb-2">
+            <h2 className="text-gray-400 font-mono font-bold text-xs uppercase tracking-widest">
+              1. CONTROL_PANEL
+            </h2>
+          </div>
+          <TaskController />
+        </section>
+
+        {/* CENTER: Queue */}
+        <section className="flex flex-col h-full min-h-0 border-x border-dashed border-gray-200 px-6 overflow-y-auto">
+          <div className="mb-2">
+            <h2 className="text-gray-400 font-mono font-bold text-xs uppercase tracking-widest">
+              2. TASK_QUEUE
+            </h2>
+          </div>
+          <TaskQueue />
+        </section>
+
+        {/* RIGHT: Physics Stack */}
+        <section className="flex flex-col h-full min-h-0 relative">
+          <PhysicsStack />
+        </section>
+
+      </div>
+
+      {/* 3. Footer (Legal Links) */}
+      <footer className="bg-white border-t border-gray-300 py-4 px-6 shrink-0">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-mono text-gray-500">
+          <div className="flex items-center gap-6">
+            <a href="/terms" className="hover:text-black hover:underline">利用規約 (Terms)</a>
+            <a href="/privacy" className="hover:text-black hover:underline">プライバシーポリシー (Privacy)</a>
+            <a href="/company" className="hover:text-black hover:underline">会社情報 (Company)</a>
+          </div>
+          <div>© {new Date().getFullYear()} DONE!!! All rights reserved.</div>
+        </div>
+      </footer>
+
+      {/* Modals */}
+      <SummaryModal isOpen={showSummary} onClose={() => setShowSummary(false)} />
+
+    </main>
   );
 }
