@@ -5,6 +5,7 @@ import TaskController from "@/components/TaskController";
 import TaskQueue from "@/components/TaskQueue";
 import PhysicsStack from "@/components/PhysicsStack";
 import SummaryModal from "@/components/SummaryModal";
+import BootSequence from "@/components/BootSequence";
 import AuthButton from "@/components/AuthButton";
 import { useGameStore } from "@/store/gameStore";
 
@@ -15,89 +16,99 @@ export default function Home() {
 
   useEffect(() => {
     setMounted(true);
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      e.preventDefault();
-      e.returnValue = '';
-    };
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, []);
 
   if (!mounted) return null;
 
   return (
-    <main className="w-full h-screen overflow-y-auto flex flex-col bg-[var(--background)]">
+    <main className="w-full h-screen overflow-hidden flex flex-col relative text-[var(--neon-green)]">
 
-      {/* 1. Status Bar / Header */}
-      <header className="h-12 bg-white border-b border-gray-300 flex items-center justify-between px-6 shrink-0 z-20 sticky top-0">
+      {/* Boot Sequence Overlay */}
+      <BootSequence />
+
+      {/* CRT Overlay Effects */}
+      <div className="crt-overlay"></div>
+
+      {/* 1. Terminal Header */}
+      <header className="h-14 border-b border-[var(--terminal-grid)] flex items-center justify-between px-6 shrink-0 z-10 bg-[var(--terminal-bg)]">
         <div className="flex items-center gap-4">
-          <h1 className="font-black italic tracking-tighter text-xl bg-black text-white px-2 transform -rotate-2">
-            DONE!!!
+          <h1 className="font-bold text-xl tracking-widest text-[var(--neon-green)] glitch-hover cursor-default">
+            [DONE_TERMINAL_V4]
           </h1>
-          <span className="text-xs font-mono text-gray-400">HIERARCHY TASK LOGGER</span>
+          <span className="text-xs font-mono text-[var(--neon-green)] opacity-50 blinking-cursor">
+            SYSTEM_ONLINE
+          </span>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 text-xs font-mono">
           {activeTask && (
-            <span className="text-xs font-mono font-bold animate-pulse text-[var(--accent-magenta)]">
-              ● RECORDING
-            </span>
+            <div className="flex items-center gap-2 text-[var(--neon-pink)] animate-pulse border border-[var(--neon-pink)] px-2 py-1">
+              <span>● REC:</span>
+              <span className="uppercase">{activeTask.name}</span>
+            </div>
           )}
           <AuthButton />
           <button
             onClick={() => setShowSummary(true)}
-            className="bg-[var(--accent-magenta)] text-white text-xs font-bold px-4 py-2 rounded-sm hover:brightness-110 transition-all font-mono"
+            className="border border-[var(--neon-green)] text-[var(--neon-green)] px-4 py-2 hover:bg-[var(--neon-green)] hover:text-black transition-colors uppercase"
           >
-            DAILY REPORT
+            Report.log
           </button>
         </div>
       </header>
 
-      {/* 2. Main 3-Column Grid (Expanded Left: 2fr 1fr 1fr) */}
-      <div className="flex-1 grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr] gap-6 p-6 min-h-0">
+      {/* 2. Main Dashboard Layout */}
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-[400px_1fr_350px] gap-0 min-h-0 z-10">
 
-        {/* LEFT: Task Controller (Input & Active Timer) */}
-        <section className="flex flex-col h-full min-h-0 overflow-y-auto">
-          <div className="mb-2">
-            <h2 className="text-gray-400 font-mono font-bold text-xs uppercase tracking-widest">
-              1. CONTROL_PANEL
-            </h2>
+        {/* COL 1: Input & Control (Terminal Console) */}
+        <section className="flex flex-col h-full border-r border-[var(--terminal-grid)] bg-[rgba(0,5,0,0.5)] p-6">
+          <div className="mb-4 flex items-center gap-2 opacity-70">
+            <span className="text-xs">Console/Input</span>
+            <div className="h-[1px] flex-1 bg-[var(--neon-green)]"></div>
           </div>
           <TaskController />
         </section>
 
-        {/* CENTER: Queue */}
-        <section className="flex flex-col h-full min-h-0 border-x border-dashed border-gray-200 px-6 overflow-y-auto">
-          <div className="mb-2">
-            <h2 className="text-gray-400 font-mono font-bold text-xs uppercase tracking-widest">
-              2. TASK_QUEUE
-            </h2>
+        {/* COL 2: Task Queue (Data Log) */}
+        <section className="flex flex-col h-full border-r border-[var(--terminal-grid)] p-6 overflow-y-auto bg-[rgba(0,0,0,0.3)]">
+          <div className="mb-4 flex items-center gap-2 opacity-70">
+            <span className="text-xs">Process_Queue</span>
+            <div className="h-[1px] flex-1 bg-[var(--neon-green)]"></div>
           </div>
           <TaskQueue />
         </section>
 
-        {/* RIGHT: Physics Stack */}
-        <section className="flex flex-col h-full min-h-0 relative">
+        {/* COL 3: Visualizer (Stack) */}
+        <section className="flex flex-col h-full p-6 relative bg-[rgba(0,10,0,0.2)]">
+          <div className="mb-4 flex items-center gap-2 opacity-70">
+            <span className="text-xs">Memory_Dump</span>
+            <div className="h-[1px] flex-1 bg-[var(--neon-green)]"></div>
+          </div>
           <PhysicsStack />
+
+          {/* Decorative Footer in Col 3 */}
+          <div className="mt-auto pt-4 text-[10px] text-[var(--neon-green)] opacity-50 flex flex-col gap-1">
+            <div>Mem: 64TB OK</div>
+            <div>Net: CONNECTED</div>
+            <div>Sec: ENCRYPTED</div>
+          </div>
         </section>
 
       </div>
 
-      {/* 3. Footer (Legal Links) */}
-      <footer className="bg-white border-t border-gray-300 py-4 px-6 shrink-0">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-mono text-gray-500">
-          <div className="flex items-center gap-6">
-            <a href="/terms" className="hover:text-black hover:underline">利用規約 (Terms)</a>
-            <a href="/privacy" className="hover:text-black hover:underline">プライバシーポリシー (Privacy)</a>
-            <a href="/company" className="hover:text-black hover:underline">会社情報 (Company)</a>
-          </div>
-          <div>© {new Date().getFullYear()} DONE!!! All rights reserved.</div>
+      {/* Footer (Status Line) */}
+      <footer className="shrink-0 h-8 border-t border-[var(--terminal-grid)] bg-[var(--terminal-bg)] flex items-center justify-between px-4 text-[10px] text-[var(--neon-green)] z-10">
+        <div className="flex gap-4">
+          <a href="/terms" className="hover:text-white hover:underline">[TERMS]</a>
+          <a href="/privacy" className="hover:text-white hover:underline">[PRIVACY]</a>
+          <a href="/company" className="hover:text-white hover:underline">[CORP]</a>
+        </div>
+        <div className="tracking-widest">
+          SESSION_ID: {Math.random().toString(36).substring(7).toUpperCase()}
         </div>
       </footer>
 
-      {/* Modals */}
       <SummaryModal isOpen={showSummary} onClose={() => setShowSummary(false)} />
-
     </main>
   );
 }

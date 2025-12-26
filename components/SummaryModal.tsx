@@ -29,18 +29,17 @@ export default function SummaryModal({ isOpen, onClose }: SummaryModalProps) {
     // Sort tasks by duration (longest first) for display
     const sortedTasks = [...completedTasks].sort((a, b) => b.totalDuration - a.totalDuration);
 
-    // Generate AI-style feedback
     const generateFeedback = () => {
         if (completedTasks.length === 0) {
-            return "本日はまだタスクが完了していません。最初の一歩を踏み出しましょう！";
+            return "NO_DATA_FOUND. INITIATE_FIRST_MISSION.";
         }
-        if (totalSeconds > 4 * 3600) { // > 4 hours
-            return `素晴らしい集中力です！${hours}時間${mins}分のディープワークは大きな成果につながります。`;
+        if (totalSeconds > 4 * 3600) {
+            return `EXCELLENT_FOCUS: ${hours}H ${mins}M DEEP_WORK DETECTED.`;
         }
         if (completedTasks.length >= 5) {
-            return `${completedTasks.length}個のタスクを完了！小さな勝利の積み重ねが大きな成功を生みます。`;
+            return `${completedTasks.length} PROCESSES TERMINATED. EFFICIENCY OPTIMAL.`;
         }
-        return "良いペースです。次のタスクに取り組んで、さらにブロックを積み上げましょう！";
+        return "SYSTEM_STABLE. CONTINUE OPERATIONS.";
     };
 
     const formatDuration = (seconds: number) => {
@@ -53,74 +52,77 @@ export default function SummaryModal({ isOpen, onClose }: SummaryModalProps) {
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             {/* Backdrop */}
-            <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
 
-            {/* OS Window Modal */}
-            <div className="os-window w-full max-w-5xl shadow-2xl animate-in fade-in zoom-in duration-200 z-10">
+            {/* Terminal Window Modal */}
+            <div className="terminal-box w-full max-w-5xl shadow-[0_0_50px_rgba(0,255,65,0.1)] animate-in fade-in zoom-in duration-200 z-10 bg-black text-[var(--neon-green)] flex flex-col max-h-[90vh]">
 
                 {/* Title Bar */}
-                <div className="os-title-bar">
-                    <div className="flex gap-2 items-center">
-                        <span>📊 DAILY_REPORT.exe</span>
+                <div className="flex justify-between items-center p-2 border-b border-[var(--terminal-grid)] bg-[var(--terminal-grid)]">
+                    <div className="flex gap-2 items-center text-xs font-bold text-white">
+                        <span>📊 DAILY_REPORT_LOG</span>
+                        <span className="animate-pulse">_</span>
                     </div>
                     <button
                         onClick={onClose}
-                        className="px-2 hover:bg-red-500 hover:text-white transition-colors"
+                        className="px-2 text-[var(--neon-green)] hover:text-[var(--neon-pink)] transition-colors font-bold"
                     >
-                        [X]
+                        [CLOSE]
                     </button>
                 </div>
 
                 {/* Content */}
-                <div className="os-content bg-[#F5F5FA] max-h-[85vh] overflow-y-auto font-mono text-sm p-6">
+                <div className="overflow-y-auto p-6 font-mono text-sm relative">
+                    {/* Scanline overlay for modal */}
+                    <div className="absolute inset-0 pointer-events-none opacity-10 bg-[linear-gradient(rgba(18,16,16,0)50%,rgba(0,0,0,0.25)50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%]"></div>
 
                     {/* Header */}
-                    <div className="flex justify-between items-start mb-6">
+                    <div className="flex justify-between items-start mb-6 border-b border-[var(--terminal-grid)] pb-4">
                         <div>
-                            <h1 className="text-3xl font-black mb-1">DAILY REPORT</h1>
-                            <p className="text-gray-500 text-xs">{today}</p>
+                            <h1 className="text-2xl font-bold mb-1 tracking-widest text-shadow-green">DAILY_REPORT_LOG</h1>
+                            <p className="opacity-70 text-xs text-[var(--neon-blue)]">{today}</p>
                         </div>
                         <div className="text-right">
-                            <div className="text-xs text-gray-400">SESSION_ID</div>
-                            <div className="font-bold">{Date.now().toString().slice(-8)}</div>
+                            <div className="text-xs opacity-50">SESSION_ID</div>
+                            <div className="font-bold text-[var(--neon-pink)]">{Date.now().toString().slice(-8)}</div>
                         </div>
                     </div>
 
                     {/* Key Stats Grid */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                        <div className="bg-white p-4 border border-gray-200 shadow-sm">
-                            <div className="text-xs text-gray-400 uppercase mb-1">総集中時間</div>
-                            <div className="text-3xl font-black text-[var(--accent-magenta)]">
+                        <div className="border border-[var(--terminal-grid)] p-4 bg-[rgba(0,255,65,0.05)]">
+                            <div className="text-[10px] opacity-70 uppercase mb-1">TOTAL_FOCUS_TIME</div>
+                            <div className="text-2xl font-bold text-[var(--neon-pink)]">
                                 {hours}h {mins}m
                             </div>
                         </div>
-                        <div className="bg-white p-4 border border-gray-200 shadow-sm">
-                            <div className="text-xs text-gray-400 uppercase mb-1">完了タスク</div>
-                            <div className="text-3xl font-black text-[var(--accent-cyan)]">
+                        <div className="border border-[var(--terminal-grid)] p-4 bg-[rgba(0,255,255,0.05)]">
+                            <div className="text-[10px] opacity-70 uppercase mb-1">COMPLETED_TASKS</div>
+                            <div className="text-2xl font-bold text-[var(--neon-cyan)]">
                                 {completedTasks.length}
                             </div>
                         </div>
-                        <div className="bg-white p-4 border border-gray-200 shadow-sm">
-                            <div className="text-xs text-gray-400 uppercase mb-1">平均所要時間</div>
-                            <div className="text-3xl font-black">
+                        <div className="border border-[var(--terminal-grid)] p-4">
+                            <div className="text-[10px] opacity-70 uppercase mb-1">AVG_DURATION</div>
+                            <div className="text-2xl font-bold">
                                 {avgDuration}m
                             </div>
                         </div>
-                        <div className="bg-white p-4 border border-gray-200 shadow-sm">
-                            <div className="text-xs text-gray-400 uppercase mb-1">待機中</div>
-                            <div className="text-3xl font-black text-orange-500">
+                        <div className="border border-[var(--terminal-grid)] p-4">
+                            <div className="text-[10px] opacity-70 uppercase mb-1">SYSTEM_QUEUE</div>
+                            <div className="text-2xl font-bold text-[var(--neon-yellow)]">
                                 {queue.length}{activeTask ? '+1' : ''}
                             </div>
                         </div>
                     </div>
 
                     {/* AI Feedback Banner */}
-                    <div className="bg-gradient-to-r from-[var(--accent-magenta)] to-[var(--accent-cyan)] text-white p-4 mb-8 shadow-lg">
+                    <div className="border border-[var(--neon-blue)] p-4 mb-8 shadow-[0_0_10px_rgba(0,255,255,0.2)]">
                         <div className="flex items-start gap-3">
-                            <div className="text-2xl">🤖</div>
+                            <div className="text-xl">🤖</div>
                             <div>
-                                <div className="text-xs opacity-75 mb-1">AI_FEEDBACK</div>
-                                <p className="font-bold">{generateFeedback()}</p>
+                                <div className="text-[10px] text-[var(--neon-blue)] mb-1">AI_ANALYSIS_RESULT</div>
+                                <p className="font-bold text-white">{generateFeedback()}</p>
                             </div>
                         </div>
                     </div>
@@ -129,26 +131,26 @@ export default function SummaryModal({ isOpen, onClose }: SummaryModalProps) {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
 
                         {/* Completed Task List */}
-                        <div className="bg-white border border-gray-200 p-4 shadow-sm">
-                            <h3 className="font-bold text-sm mb-4 border-b border-gray-200 pb-2">
-                                完了タスク一覧 ({completedTasks.length})
+                        <div className="border border-[var(--terminal-grid)] p-4">
+                            <h3 className="font-bold text-xs mb-4 border-b border-[var(--terminal-grid)] pb-2 text-[var(--neon-green)]">
+                                TASK_EXECUTION_LOG ({completedTasks.length})
                             </h3>
                             {completedTasks.length === 0 ? (
-                                <p className="text-gray-400 text-center py-8">NO_DATA</p>
+                                <p className="opacity-50 text-center py-8 text-xs">NO_DATA_AVAILABLE</p>
                             ) : (
-                                <div className="space-y-2 max-h-60 overflow-y-auto">
+                                <div className="space-y-2 max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-[var(--neon-green)] scrollbar-track-transparent">
                                     {sortedTasks.map((task, idx) => (
-                                        <div key={task.id} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
+                                        <div key={task.id} className="flex justify-between items-center py-2 border-b border-[var(--terminal-grid)] last:border-b-0 hover:bg-[rgba(0,255,65,0.1)] px-2 transition-colors">
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-2">
-                                                    <span className="text-xs text-gray-400">#{idx + 1}</span>
-                                                    <span className="font-bold truncate">{task.name}</span>
+                                                    <span className="text-[10px] opacity-50">#{idx + 1}</span>
+                                                    <span className="font-bold truncate text-xs">{task.name}</span>
                                                 </div>
-                                                <div className="text-xs text-gray-400">
+                                                <div className="text-[10px] opacity-70">
                                                     {task.project} / {task.category}
                                                 </div>
                                             </div>
-                                            <div className="text-right font-mono font-bold text-[var(--accent-magenta)]">
+                                            <div className="text-right font-mono font-bold text-[var(--neon-pink)] text-xs">
                                                 {formatDuration(task.totalDuration)}
                                             </div>
                                         </div>
@@ -158,34 +160,37 @@ export default function SummaryModal({ isOpen, onClose }: SummaryModalProps) {
                         </div>
 
                         {/* Distribution Chart */}
-                        <div className="bg-white border border-gray-200 p-4 shadow-sm">
-                            <h3 className="font-bold text-sm mb-4 border-b border-gray-200 pb-2">
-                                時間配分
+                        <div className="border border-[var(--terminal-grid)] p-4">
+                            <h3 className="font-bold text-xs mb-4 border-b border-[var(--terminal-grid)] pb-2 text-[var(--neon-green)]">
+                                TIME_DISTRIBUTION
                             </h3>
-                            <CategoryPie tasks={completedTasks} />
+                            <div className="opacity-80">
+                                <CategoryPie tasks={completedTasks} />
+                            </div>
                         </div>
 
                     </div>
 
                     {/* Heatmap */}
-                    <div className="bg-white border border-gray-200 p-4 shadow-sm mb-8">
-                        <h3 className="font-bold text-sm mb-4 border-b border-gray-200 pb-2">
-                            24時間 アクティビティマップ
+                    <div className="border border-[var(--terminal-grid)] p-4 mb-8">
+                        <h3 className="font-bold text-xs mb-4 border-b border-[var(--terminal-grid)] pb-2 text-[var(--neon-green)]">
+                            24H_ACTIVITY_MAP
                         </h3>
-                        <Heatmap tasks={completedTasks} />
+                        <div className="opacity-80 grayscale hover:grayscale-0 transition-all">
+                            <Heatmap tasks={completedTasks} />
+                        </div>
                     </div>
 
                     {/* Data Warning Footer */}
-                    <div className="bg-gray-900 text-white p-4 flex items-start gap-4 rounded">
-                        <div className="text-xl">💾</div>
+                    <div className="border border-red-900 bg-red-900/10 p-4 flex items-start gap-4">
+                        <div className="text-red-500">⚠</div>
                         <div className="flex-1">
-                            <h4 className="font-bold text-[var(--accent-cyan)] text-sm">DATA_PERSISTENCE</h4>
-                            <p className="text-xs text-gray-300 mt-1">
-                                データはブラウザのLocalStorageに保存されています。
-                                キャッシュクリアでデータが失われる可能性があります。
+                            <h4 className="font-bold text-red-500 text-xs">DATA_PERSISTENCE_WARNING</h4>
+                            <p className="text-[10px] opacity-70 mt-1">
+                                LOCAL_STORAGE_DETECTED. CLEARING_CACHE_WILL_RESULT_IN_DATA_LOSS.
                             </p>
                         </div>
-                        <button className="bg-[var(--accent-magenta)] text-white text-xs font-bold px-4 py-2 hover:brightness-110 transition-all">
+                        <button className="border border-red-500 text-red-500 text-[10px] px-4 py-2 hover:bg-red-500 hover:text-black transition-all uppercase">
                             EXPORT_CSV
                         </button>
                     </div>

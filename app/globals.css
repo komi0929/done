@@ -1,93 +1,226 @@
 @import "tailwindcss";
 
 :root {
-  --background: #F5F5FA;
-  /* Light Lavender/Gray */
-  --foreground: #1A1A1A;
-  --accent-cyan: #00FFFF;
-  --accent-magenta: #FF00FF;
-  --window-bg: #FFFFFF;
-  --window-border: #1A1A1A;
+  /* Retro Future Palette */
+  --terminal-bg: #050505;
+  --terminal-grid: #1a1a1a;
+  --neon-green: #00ff41;
+  --neon-pink: #ff00ff;
+  --neon-blue: #00ffff;
+  --neon-yellow: #fdfd00;
+
+  --scanline-color: rgba(0, 0, 0, 0.5);
+  --glass-reflection: rgba(255, 255, 255, 0.05);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-accent-cyan: var(--accent-cyan);
-  --color-accent-magenta: var(--accent-magenta);
-
-  --font-mono: var(--font-mono);
+  --color-terminal-bg: var(--terminal-bg);
+  --color-terminal-grid: var(--terminal-grid);
+  --color-neon-green: var(--neon-green);
+  --color-neon-pink: var(--neon-pink);
+  --color-neon-blue: var(--neon-blue);
+  --color-neon-yellow: var(--neon-yellow);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-mono), monospace;
-  /* Default to Mono for OS feel */
-  overflow: hidden;
+  background-color: var(--terminal-bg);
   background-image:
-    linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
-  background-size: 40px 40px;
-  /* Grid Pattern */
-  text-transform: uppercase;
+    linear-gradient(var(--terminal-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--terminal-grid) 1px, transparent 1px);
+  background-size: 30px 30px;
+  color: var(--neon-green);
+  font-family: 'JetBrains Mono', monospace;
+  overflow-x: hidden;
+  text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+  /* Subtle glow for all text */
 }
 
-/* OS Window Utility */
-.os-window {
-  background: var(--window-bg);
-  border: 1px solid var(--window-border);
-  box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
+/* --- CRT Effects --- */
+
+@keyframes scanline {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(100vh);
+  }
 }
 
-.os-title-bar {
-  background: var(--window-border);
-  color: white;
-  padding: 4px 8px;
-  font-size: 0.8rem;
-  font-weight: bold;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+@keyframes flicker {
+  0% {
+    opacity: 0.97;
+  }
+
+  5% {
+    opacity: 0.95;
+  }
+
+  10% {
+    opacity: 0.9;
+  }
+
+  15% {
+    opacity: 0.95;
+  }
+
+  20% {
+    opacity: 0.99;
+  }
+
+  50% {
+    opacity: 0.95;
+  }
+
+  55% {
+    opacity: 0.9;
+  }
+
+  60% {
+    opacity: 0.95;
+  }
+
+  80% {
+    opacity: 0.98;
+  }
+
+  100% {
+    opacity: 0.97;
+  }
 }
 
-.os-content {
-  padding: 1rem;
+.crt-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none;
+  z-index: 9999;
+  animation: flicker 0.15s infinite;
 }
 
-/* Custom Utilities */
-.barcode-strip {
-  height: 20px;
-  background-image: linear-gradient(90deg,
-      #000 0%, #000 5%,
-      transparent 5%, transparent 10%,
-      #000 10%, #000 12%,
-      transparent 12%, transparent 15%,
-      #000 15%, #000 30%,
-      transparent 30%, transparent 40%,
-      #000 40%, #000 45%,
-      transparent 45%, transparent 55%,
-      #000 55%, #000 60%);
-  background-size: 100% 100%;
+.crt-overlay::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  z-index: 2;
+  background-size: 100% 2px, 3px 100%;
 }
 
-.os-input {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid var(--window-border);
-  background: white;
-  font-family: var(--font-mono), monospace;
+.crt-overlay::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(18, 16, 16, 0.1);
+  opacity: 0;
+  z-index: 2;
+  pointer-events: none;
+  animation: scanline 10s linear infinite;
+}
+
+/* --- Glitch Effects --- */
+@keyframes glitch-skew {
+  0% {
+    transform: skew(0deg);
+  }
+
+  20% {
+    transform: skew(-2deg);
+  }
+
+  40% {
+    transform: skew(2deg);
+  }
+
+  60% {
+    transform: skew(-1deg);
+  }
+
+  80% {
+    transform: skew(1deg);
+  }
+
+  100% {
+    transform: skew(0deg);
+  }
+}
+
+.glitch-hover:hover {
+  animation: glitch-skew 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+  color: var(--neon-pink);
+  text-shadow: 2px 0 var(--neon-blue), -2px 0 var(--neon-yellow);
+}
+
+/* --- UI Component Styles --- */
+
+.terminal-box {
+  background: rgba(0, 5, 0, 0.8);
+  border: 1px solid var(--neon-green);
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
+  position: relative;
+}
+
+.terminal-box::before {
+  /* Corner markings */
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  right: -1px;
+  bottom: -1px;
+  background:
+    linear-gradient(to right, var(--neon-green) 2px, transparent 2px) 0 0,
+    linear-gradient(to right, var(--neon-green) 2px, transparent 2px) 0 100%,
+    linear-gradient(to left, var(--neon-green) 2px, transparent 2px) 100% 0,
+    linear-gradient(to left, var(--neon-green) 2px, transparent 2px) 100% 100%,
+    linear-gradient(to bottom, var(--neon-green) 2px, transparent 2px) 0 0,
+    linear-gradient(to bottom, var(--neon-green) 2px, transparent 2px) 100% 0,
+    linear-gradient(to top, var(--neon-green) 2px, transparent 2px) 0 100%,
+    linear-gradient(to top, var(--neon-green) 2px, transparent 2px) 100% 100%;
+  background-size: 10px 10px;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+
+.terminal-input {
+  background: transparent;
+  border: none;
+  color: var(--neon-green);
+  font-family: 'JetBrains Mono', monospace;
   outline: none;
-  transition: border-color 0.1s, box-shadow 0.1s;
 }
 
-.os-input:focus {
-  border-color: var(--accent-magenta);
-  box-shadow: 0 0 0 2px rgba(255, 0, 255, 0.1);
+.terminal-input::placeholder {
+  color: rgba(0, 255, 65, 0.3);
 }
 
-/* Legacy Neo-Brutalism variable (for blocks using --neon-yellow) */
-:root {
-  --neon-yellow: #CCFF00;
+.blinking-cursor::after {
+  content: "█";
+  animation: blink 1s step-end infinite;
+  color: var(--neon-green);
+  margin-left: 5px;
+}
+
+@keyframes blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
 }

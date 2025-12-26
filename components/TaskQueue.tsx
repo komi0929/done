@@ -1,56 +1,48 @@
 "use client";
 
-import { useGameStore } from '@/store/gameStore';
+import { useGameStore } from "@/store/gameStore";
 
 export default function TaskQueue() {
-    const { queue, resumeTask } = useGameStore();
+    const queue = useGameStore((state) => state.queue);
 
-    const formatTime = (seconds: number) => {
-        const h = Math.floor(seconds / 3600);
-        const m = Math.floor((seconds % 3600) / 60);
-        return `${h}h ${m}m`; // Simplified for small cards
-    };
+    if (queue.length === 0) {
+        return (
+            <div className="flex flex-col items-center justify-center h-40 text-[var(--neon-green)] opacity-30 font-mono text-sm border border-dashed border-[var(--terminal-grid)]">
+                <span>[EMPTY_BUFFER]</span>
+                <span>WAITING_FOR_DATA...</span>
+            </div>
+        );
+    }
 
     return (
-        <div className="h-full flex flex-col">
-            <div className="flex items-center gap-2 mb-4">
-                <h2 className="text-gray-500 font-mono font-bold text-sm">SUSPENDED_PROCESSES ({queue.length})</h2>
-                <div className="flex-1 h-[1px] bg-gray-300"></div>
-            </div>
+        <div className="flex flex-col gap-2 font-mono">
+            {queue.map((task, index) => (
+                <div
+                    key={task.id}
+                    className="group relative border-l-2 border-[var(--terminal-grid)] pl-4 py-2 hover:border-[var(--neon-pink)] transition-colors"
+                >
+                    {/* Index Marker */}
+                    <div className="absolute left-[-5px] top-1/2 -translate-y-1/2 w-2 h-2 bg-[var(--terminal-bg)] border border-[var(--terminal-grid)] group-hover:bg-[var(--neon-pink)] transition-colors"></div>
 
-            <div className="flex-1 overflow-y-auto space-y-4 pr-2">
-                {queue.length === 0 && (
-                    <div className="h-40 border-2 border-dashed border-gray-200 rounded flex items-center justify-center text-gray-400 text-xs font-mono">
-                        QUEUE_EMPTY
-                    </div>
-                )}
-
-                {queue.map((task) => (
-                    <div
-                        key={task.id}
-                        className="os-window bg-white border border-gray-300 p-4 hover:border-[var(--accent-magenta)] group transition-all cursor-pointer relative"
-                        onClick={() => resumeTask(task.id)}
-                    >
-                        {/* Resume Overlay */}
-                        <div className="absolute inset-0 bg-[var(--accent-magenta)] opacity-0 group-hover:opacity-10 flex items-center justify-center transition-opacity"></div>
-                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-[var(--accent-magenta)] text-white text-xs px-2 py-1 font-bold">
-                            RESUME
-                        </div>
-
-                        <div className="flex justify-between items-start mb-2">
-                            <span className="bg-gray-100 text-gray-500 text-[10px] px-1 font-mono uppercase">
-                                {task.project}
+                    <div className="flex justify-between items-start">
+                        <div className="flex flex-col">
+                            <span className="text-[10px] text-gray-500 mb-1 group-hover:text-[var(--neon-pink)]">
+                                ID: {task.id.slice(0, 8)}
                             </span>
-                            <span className="font-mono text-gray-400 text-xs">
-                                {formatTime(task.accumulatedTime)}
+                            <span className="text-sm text-[var(--neon-green)] glitch-hover">
+                                {task.name}
                             </span>
                         </div>
 
-                        <h3 className="font-bold text-lg leading-tight mb-1">{task.name}</h3>
-                        <p className="text-xs text-gray-400 font-mono">{task.category}</p>
+                        {/* Time Estimate if available */}
+                        {task.accumulatedTime > 0 && (
+                            <span className="text-[10px] border border-[var(--neon-green)] px-1 text-[var(--neon-green)]">
+                                {Math.floor(task.accumulatedTime / 60000)}m
+                            </span>
+                        )}
                     </div>
-                ))}
-            </div>
+                </div>
+            ))}
         </div>
     );
 }

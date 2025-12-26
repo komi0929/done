@@ -36,8 +36,8 @@ export default function PhysicsStack() {
                 angle: (Math.random() - 0.5) * 0.1,
                 chamfer: { radius: 0 },
                 render: {
-                    fillStyle: '#FFFFFF',
-                    strokeStyle: '#1A1A1A',
+                    fillStyle: 'transparent', // Wireframe style
+                    strokeStyle: '#00ff41',
                     lineWidth: 2,
                 },
                 // @ts-ignore
@@ -77,7 +77,7 @@ export default function PhysicsStack() {
                 width: clientWidth,
                 height: clientHeight,
                 background: 'transparent',
-                wireframes: false,
+                wireframes: false, // We simulate wireframes with fillStyle: transparent + strokeStyle
                 showAngleIndicator: false,
             }
         });
@@ -86,7 +86,11 @@ export default function PhysicsStack() {
         // Create Walls
         const wallOptions = {
             isStatic: true,
-            render: { fillStyle: 'transparent' }
+            render: {
+                fillStyle: 'transparent',
+                strokeStyle: '#1A1A1A',
+                lineWidth: 1
+            }
         };
         const ground = Bodies.rectangle(clientWidth / 2, clientHeight + 30, clientWidth, 60, wallOptions);
         const leftWall = Bodies.rectangle(-30, clientHeight / 2, 60, clientHeight, wallOptions);
@@ -125,13 +129,11 @@ export default function PhysicsStack() {
                         context.translate(body.position.x, body.position.y);
                         context.rotate(body.angle);
 
-                        context.font = "bold 10px 'JetBrains Mono', monospace"; // Smaller font
-                        context.fillStyle = "#1A1A1A";
+                        context.font = "bold 10px 'JetBrains Mono', monospace";
+                        context.fillStyle = "#00ff41"; // Neon Green text
+                        context.shadowColor = "#00ff41";
+                        context.shadowBlur = 4;
                         context.fillText(taskName, 0, 0);
-
-                        context.font = "8px 'JetBrains Mono', monospace";
-                        context.fillStyle = "#666";
-                        context.fillText(".task", 0, 12);
 
                         context.restore();
                     }
@@ -166,11 +168,8 @@ export default function PhysicsStack() {
     }, [completedTasks, addTaskBlock]);
 
     return (
-        <div ref={containerRef} className="relative w-full h-full bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg overflow-hidden">
-            {/* Title Overlay */}
-            <div className="absolute top-4 left-0 w-full text-center pointer-events-none z-10">
-                <h2 className="text-gray-400 font-mono font-bold text-sm tracking-widest">ACHIEVEMENT_STACK</h2>
-            </div>
+        <div ref={containerRef} className="relative w-full h-full bg-[rgba(0,10,0,0.2)] border border-[var(--terminal-grid)] overflow-hidden">
+            {/* Overlay grid pattern via CSS if needed, but simple transparent is fine */}
             <canvas ref={canvasRef} className="block w-full h-full" />
         </div>
     );
