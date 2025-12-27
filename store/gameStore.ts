@@ -175,10 +175,7 @@ export const useGameStore = create<GameState>()(
                     });
 
                     // Also update profile total_tasks
-                    await supabase.rpc('increment_total_tasks', { user_id: user.id }).catch(() => {
-                        // fallback if rpc not exists or fails (we haven't created it yet, maybe just ignore or do count)
-                        // Actually let's just insert for now.
-                    });
+                    await supabase.rpc('increment_total_tasks', { user_id: user.id });
                 }
             },
 
