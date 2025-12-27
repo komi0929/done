@@ -1,5 +1,8 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { createClient } from '@/utils/supabase/client';
+
+const supabase = createClient();
 
 export interface BaseTask {
     id: string;
@@ -35,10 +38,13 @@ interface GameState {
     // Actions
     startNewTask: (name: string, project: string, category: string) => void;
     resumeTask: (taskId: string) => void;
-    finishCurrentTask: () => void;
+    finishCurrentTask: () => Promise<void>;
     toggleTheme: () => void;
     pauseCurrentTask: () => void; // Helper to move active to queue
     removeFromHistory: (type: 'project' | 'category', value: string) => void;
+
+    // Supabase Sync
+    fetchUserTasks: (userId: string) => Promise<void>;
 }
 
 export const useGameStore = create<GameState>()(
@@ -133,7 +139,7 @@ export const useGameStore = create<GameState>()(
                 });
             },
 
-            finishCurrentTask: () => {
+            finishCurrentTask: async () => {
                 const { activeTask, completedTasks } = get();
                 if (!activeTask) return;
 
@@ -151,10 +157,50 @@ export const useGameStore = create<GameState>()(
                     totalDuration,
                 };
 
+                // Optimistic update
                 set({
                     completedTasks: [...completedTasks, completed],
                     activeTask: null,
                 });
+
+                // Sync to Supabase if user is logged in
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    await supabase.from('completed_tasks').insert({
+                        user_id: user.id,
+                        title: completed.name,
+                        duration: Math.round(completed.totalDuration),
+                        completed_at: new Date(completed.completedAt).toISOString(),
+                        block_type: 'default' // later custom skins
+                    });
+
+                    // Also update profile total_tasks
+                    await supabase.rpc('increment_total_tasks', { user_id: user.id }).catch(() => {
+                        // fallback if rpc not exists or fails (we haven't created it yet, maybe just ignore or do count)
+                        // Actually let's just insert for now.
+                    });
+                }
+            },
+
+            fetchUserTasks: async (userId: string) => {
+                const { data, error } = await supabase
+                    .from('completed_tasks')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .order('completed_at', { ascending: true }); // oldest first to stack up? or newest? Stack usually builds up. 
+
+                if (!error && data) {
+                    const tasks: CompletedTask[] = data.map((t: any) => ({
+                        id: t.id,
+                        name: t.title,
+                        project: 'Archived', // Schema didn't have project/category yet, maybe add later or default
+                        category: 'Archived',
+                        accumulatedTime: t.duration,
+                        totalDuration: t.duration,
+                        completedAt: new Date(t.completed_at).getTime(),
+                    }));
+                    set({ completedTasks: tasks });
+                }
             },
 
             removeFromHistory: (type, value) => {

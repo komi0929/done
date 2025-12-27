@@ -1,23 +1,23 @@
 "use client";
 
-import { signIn, signOut, useSession } from "next-auth/react";
+import { useAuth } from "@/components/AuthProvider";
 
 export default function AuthButton() {
-    const { data: session, status } = useSession();
+    const { user, isLoading, signInWithGoogle, signOut } = useAuth();
 
-    if (status === "loading") {
+    if (isLoading) {
         return (
             <div className="text-xs font-mono text-gray-400 animate-pulse">
-                AUTHENTICATING...
+                LOADING...
             </div>
         );
     }
 
-    if (session) {
+    if (user) {
         return (
             <div className="flex items-center gap-3">
                 <span className="text-xs font-mono text-gray-600">
-                    {session.user?.email?.split("@")[0]}
+                    {user.email?.split("@")[0]}
                 </span>
                 <button
                     onClick={() => signOut()}
@@ -31,7 +31,7 @@ export default function AuthButton() {
 
     return (
         <button
-            onClick={() => signIn("google")}
+            onClick={() => signInWithGoogle()}
             className="border border-[var(--text-color)] text-[var(--accent-primary)] px-4 py-2 hover:bg-[var(--accent-primary)] hover:text-[var(--bg-color)] transition-colors uppercase font-bold text-xs"
         >
             SIGN IN
