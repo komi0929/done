@@ -38,6 +38,7 @@ interface GameState {
     finishCurrentTask: () => void;
     toggleTheme: () => void;
     pauseCurrentTask: () => void; // Helper to move active to queue
+    removeFromHistory: (type: 'project' | 'category', value: string) => void;
 }
 
 export const useGameStore = create<GameState>()(
@@ -154,6 +155,15 @@ export const useGameStore = create<GameState>()(
                     completedTasks: [...completedTasks, completed],
                     activeTask: null,
                 });
+            },
+
+            removeFromHistory: (type, value) => {
+                const { projectHistory, categoryHistory } = get();
+                if (type === 'project') {
+                    set({ projectHistory: projectHistory.filter(h => h !== value) });
+                } else {
+                    set({ categoryHistory: categoryHistory.filter(h => h !== value) });
+                }
             },
 
             toggleTheme: () => set((state) => ({ theme: state.theme === 'retro' ? 'default' : 'retro' })),

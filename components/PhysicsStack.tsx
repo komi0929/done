@@ -44,7 +44,7 @@ export default function PhysicsStack() {
                 chamfer: { radius: isRetro ? 0 : 4 }, // Rounded for default
                 render: {
                     fillStyle: isRetro ? 'transparent' : '#ffffff',
-                    strokeStyle: isRetro ? '#00ff41' : '#333333',
+                    strokeStyle: isRetro ? '#00ff41' : '#000000',
                     lineWidth: 2,
                 },
                 // @ts-ignore
@@ -81,7 +81,7 @@ export default function PhysicsStack() {
 
             // It's a task block
             body.render.fillStyle = isRetro ? 'transparent' : '#ffffff';
-            body.render.strokeStyle = isRetro ? '#00ff41' : '#333333';
+            body.render.strokeStyle = isRetro ? '#00ff41' : '#000000';
             // Matter.js doesn't easily update chamfer after creation, so we skip that for existing blocks
         });
 
@@ -239,7 +239,7 @@ export default function PhysicsStack() {
     // ...
 
     return (
-        <div ref={containerRef} className="relative w-full h-full border border-[var(--grid-color)] overflow-hidden bg-[var(--bg-color)]/10 transition-colors">
+        <div ref={containerRef} className="relative w-full h-full overflow-hidden transition-colors">
             <canvas ref={canvasRef} className="block w-full h-full" />
         </div>
     );

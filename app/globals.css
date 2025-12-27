@@ -8,19 +8,23 @@
 /* --- Theme: DEFAULT (Original Simple) --- */
 [data-theme='default'] {
     --bg-color: #f7f7f7;
-    --text-color: #333333;
+    --text-color: #000000;
     --grid-color: #e5e5e5;
-    --accent-primary: #000000;
-    --accent-secondary: #555555;
+    --accent-primary: #FF00FF;
+    /* Neon Pink */
+    --accent-secondary: #000000;
 
     --font-family: var(--font-outfit), sans-serif;
     --border-style: solid;
-    --border-width: 1px;
-    --border-radius: 8px;
+    --border-width: 2px;
+    /* Thicker borders as seen in screenshot */
+    --border-radius: 0px;
+    /* Sharp corners */
 
     --crt-opacity: 0;
     --text-glow: none;
-    --box-shadow-glow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --box-shadow-glow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+    /* Hard shadow */
 
     --window-bg: #ffffff;
 }
