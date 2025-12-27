@@ -1,89 +1,69 @@
 "use client";
 
-import { useState } from "react";
-import { useGameStore } from "@/store/gameStore";
+import { useGameStore } from '@/store/gameStore';
 
 export default function TaskQueue() {
     const { queue, resumeTask } = useGameStore();
-    const [hoverId, setHoverId] = useState<string | null>(null);
     const [sortMode, setSortMode] = useState<'newest' | 'category' | 'longest'>('newest');
 
     const sortedQueue = [...queue].sort((a, b) => {
-        if (sortMode === 'newest') return 0; // Default order (assuming new on top or bottom, usually new on top if unshift used) 
-        // Actually store uses unshift for pauseCurrentTask (puts at top), so queue[0] is newest paused. 
-        // If we want "Newest" (meaning most recently paused), that's default.
-        // If "Oldest", we'd reverse. Let's assume 'Newest' = default order.
-
+        if (sortMode === 'newest') return 0; // Default (newest on top)
         if (sortMode === 'category') return (a.category || '').localeCompare(b.category || '');
         if (sortMode === 'longest') return b.accumulatedTime - a.accumulatedTime;
         return 0;
     });
 
+    const formatTime = (seconds: number) => {
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        return `${h}h ${m}m`; // Simplified for small cards
+    };
+
     return (
-        <div className="flex flex-col gap-4 font-mono text-[var(--text-color)]">
-            <div className="flex justify-between items-center border-b border-[var(--text-color)] pb-2 mb-2">
-                <span className="font-bold text-xs tracking-wider opacity-70">SUSPENDED_PROCESSES ({queue.length})</span>
-                <div className="flex gap-2 text-[10px] font-bold">
-                    <button
-                        onClick={() => setSortMode('newest')}
-                        className={`opacity-50 hover:opacity-100 ${sortMode === 'newest' ? 'opacity-100 underline' : ''}`}
-                    >
-                        NEW
-                    </button>
-                    <button
-                        onClick={() => setSortMode('category')}
-                        className={`opacity-50 hover:opacity-100 ${sortMode === 'category' ? 'opacity-100 underline' : ''}`}
-                    >
-                        CAT
-                    </button>
-                    <button
-                        onClick={() => setSortMode('longest')}
-                        className={`opacity-50 hover:opacity-100 ${sortMode === 'longest' ? 'opacity-100 underline' : ''}`}
-                    >
-                        TIME
-                    </button>
+        <div className="h-full flex flex-col">
+            <div className="flex items-center gap-2 mb-4">
+                <h2 className="text-gray-500 font-mono font-bold text-sm">SUSPENDED_PROCESSES ({queue.length})</h2>
+                <div className="flex-1 h-[1px] bg-gray-300"></div>
+                <div className="flex gap-2 text-[10px] font-mono text-gray-400">
+                    <button onClick={() => setSortMode('newest')} className={`hover:text-black ${sortMode === 'newest' ? 'text-black underline' : ''}`}>NEW</button>
+                    <button onClick={() => setSortMode('category')} className={`hover:text-black ${sortMode === 'category' ? 'text-black underline' : ''}`}>CAT</button>
+                    <button onClick={() => setSortMode('longest')} className={`hover:text-black ${sortMode === 'longest' ? 'text-black underline' : ''}`}>TIME</button>
                 </div>
             </div>
 
-            {queue.length === 0 ? (
-                <div className="text-center py-10 opacity-30 select-none">
-                    <p className="text-xs">BUFFER_EMPTY</p>
-                    <p className="text-[10px]">NO_PENDING_OPERATIONS</p>
-                </div>
-            ) : (
-                sortedQueue.map((task, index) => (
+            <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+                {queue.length === 0 && (
+                    <div className="h-40 border-2 border-dashed border-gray-200 rounded flex items-center justify-center text-gray-400 text-xs font-mono">
+                        QUEUE_EMPTY
+                    </div>
+                )}
+
+                {sortedQueue.map((task) => (
                     <div
                         key={task.id}
-                        className="group relative bg-white border-2 border-[var(--text-color)] p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)] hover:translate-y-[2px] transition-all cursor-pointer"
-                        onMouseEnter={() => setHoverId(task.id)}
-                        onMouseLeave={() => setHoverId(null)}
+                        className="os-window bg-white border border-gray-300 p-4 hover:border-[var(--accent-magenta)] group transition-all cursor-pointer relative"
                         onClick={() => resumeTask(task.id)}
                     >
-                        {/* Header */}
-                        <div className="flex justify-between items-center mb-2 text-[10px] opacity-70">
-                            <span className="uppercase">{task.project}</span>
-                            {task.accumulatedTime > 0 && (
-                                <span>{Math.floor(task.accumulatedTime / 3600)}H {Math.floor((task.accumulatedTime % 3600) / 60)}M</span>
-                            )}
+                        {/* Resume Overlay */}
+                        <div className="absolute inset-0 bg-[var(--accent-magenta)] opacity-0 group-hover:opacity-10 flex items-center justify-center transition-opacity"></div>
+                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-[var(--accent-magenta)] text-white text-xs px-2 py-1 font-bold">
+                            RESUME
                         </div>
 
-                        {/* Task Name */}
-                        <div className="text-lg font-bold mb-1 leading-tight text-[var(--text-color)]">
-                            {task.name}
+                        <div className="flex justify-between items-start mb-2">
+                            <span className="bg-gray-100 text-gray-500 text-[10px] px-1 font-mono uppercase">
+                                {task.project}
+                            </span>
+                            <span className="font-mono text-gray-400 text-xs">
+                                {task.accumulatedTime > 0 && formatTime(task.accumulatedTime)}
+                            </span>
                         </div>
 
-                        {/* Metadata */}
-                        <div className="flex justify-between items-center text-[10px] opacity-50">
-                            <span>{task.category}</span>
-                        </div>
-
-                        {/* Resume Prompt */}
-                        <div className="absolute inset-0 bg-white/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                            <span className="text-[var(--accent-primary)] font-bold text-sm tracking-widest">[RESUME]</span>
-                        </div>
+                        <h3 className="font-bold text-lg leading-tight mb-1">{task.name}</h3>
+                        <p className="text-xs text-gray-400 font-mono">{task.category}</p>
                     </div>
-                ))
-            )}
+                ))}
+            </div>
         </div>
     );
 }

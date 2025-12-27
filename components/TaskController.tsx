@@ -50,43 +50,43 @@ export default function TaskController() {
     };
 
     return (
-        <div className="h-full flex flex-col gap-4 font-mono text-[var(--text-color)]">
+        <div className="h-full flex flex-col gap-4">
 
-            {/* 1. New Task Input (Terminal Form) */}
-            <div className="terminal-box p-6 flex flex-col gap-6 relative bg-[var(--window-bg)]">
-                <div className="flex items-center gap-2 mb-2 pb-2">
-                    <span className="text-[var(--accent-primary)] font-bold text-lg">+</span>
-                    <h2 className="font-bold tracking-widest text-lg uppercase">NEW_ENTRY.EXE</h2>
+            {/* 1. New Task Input (Card) */}
+            <div className="os-window bg-white shadow-xl p-6 flex flex-col gap-4">
+                <div className="flex items-center gap-2 mb-2">
+                    <span className="text-[var(--accent-magenta)] text-xl font-bold">+</span>
+                    <h2 className="font-bold text-lg">NEW_ENTRY.exe</h2>
                 </div>
 
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-2 gap-4">
                     {/* Project Input with Dropdown */}
-                    <div className="flex flex-col gap-2 relative">
-                        <label className="text-[10px] opacity-70 uppercase tracking-wider font-bold text-[var(--text-color)]">PROJECT (L)</label>
+                    <div className="flex flex-col gap-1 relative">
+                        <label className="text-xs text-gray-500 font-mono">PROJECT (L)</label>
                         <input
                             value={project}
                             onChange={(e) => setProject(e.target.value)}
                             onFocus={() => setShowProjectDropdown(true)}
                             onBlur={() => setTimeout(() => setShowProjectDropdown(false), 150)}
-                            className="bg-[var(--bg-color)] border-2 border-[var(--text-color)] text-[var(--text-color)] outline-none px-3 py-2 text-lg focus:border-[var(--accent-primary)] transition-colors placeholder:opacity-30"
-                            placeholder="テスト"
+                            className="os-input font-bold"
+                            placeholder="DONE_OS"
                             autoComplete="off"
                         />
                         {showProjectDropdown && projectHistory.length > 0 && (
-                            <div className="absolute top-full left-0 right-0 mt-1 bg-[var(--bg-color)] border-2 border-[var(--text-color)] z-30 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-h-40 overflow-y-auto">
+                            <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-black z-30 shadow-lg max-h-40 overflow-y-auto">
                                 {projectHistory.map((p, idx) => (
-                                    <div key={idx} className="flex items-center border-b border-[var(--grid-color)] last:border-b-0 hover:bg-[var(--text-color)] group">
+                                    <div key={idx} className="flex items-center border-b border-gray-100 last:border-b-0 hover:bg-gray-100 group">
                                         <button
                                             type="button"
                                             onMouseDown={() => { setProject(p); setShowProjectDropdown(false); }}
-                                            className="flex-1 text-left px-3 py-2 text-xs group-hover:text-[var(--bg-color)] transition-colors"
+                                            className="flex-1 text-left px-3 py-2 text-sm font-mono"
                                         >
-                                            {'>'} {p}
+                                            {p}
                                         </button>
                                         <button
                                             type="button"
                                             onMouseDown={(e) => { e.stopPropagation(); removeFromHistory('project', p); }}
-                                            className="px-3 py-2 text-xs text-red-500 hover:text-white font-bold"
+                                            className="px-3 py-2 text-xs text-gray-400 hover:text-red-500 font-bold"
                                         >
                                             ✕
                                         </button>
@@ -97,32 +97,32 @@ export default function TaskController() {
                     </div>
 
                     {/* Category Input with Dropdown */}
-                    <div className="flex flex-col gap-2 relative">
-                        <label className="text-[10px] opacity-70 uppercase tracking-wider font-bold text-[var(--text-color)]">SECTION (M)</label>
+                    <div className="flex flex-col gap-1 relative">
+                        <label className="text-xs text-gray-500 font-mono">SECTION (M)</label>
                         <input
                             value={category}
                             onChange={(e) => setCategory(e.target.value)}
                             onFocus={() => setShowCategoryDropdown(true)}
                             onBlur={() => setTimeout(() => setShowCategoryDropdown(false), 150)}
-                            className="bg-[var(--bg-color)] border-2 border-[var(--text-color)] text-[var(--text-color)] outline-none px-3 py-2 text-lg focus:border-[var(--accent-primary)] transition-colors placeholder:opacity-30"
-                            placeholder="テスト"
+                            className="os-input"
+                            placeholder="DEV"
                             autoComplete="off"
                         />
                         {showCategoryDropdown && categoryHistory.length > 0 && (
-                            <div className="absolute top-full left-0 right-0 mt-1 bg-[var(--bg-color)] border-2 border-[var(--text-color)] z-30 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-h-40 overflow-y-auto">
+                            <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-black z-30 shadow-lg max-h-40 overflow-y-auto">
                                 {categoryHistory.map((c, idx) => (
-                                    <div key={idx} className="flex items-center border-b border-[var(--grid-color)] last:border-b-0 hover:bg-[var(--text-color)] group">
+                                    <div key={idx} className="flex items-center border-b border-gray-100 last:border-b-0 hover:bg-gray-100 group">
                                         <button
                                             type="button"
                                             onMouseDown={() => { setCategory(c); setShowCategoryDropdown(false); }}
-                                            className="flex-1 text-left px-3 py-2 text-xs group-hover:text-[var(--bg-color)] transition-colors"
+                                            className="flex-1 text-left px-3 py-2 text-sm font-mono"
                                         >
-                                            {'>'} {c}
+                                            {c}
                                         </button>
                                         <button
                                             type="button"
                                             onMouseDown={(e) => { e.stopPropagation(); removeFromHistory('category', c); }}
-                                            className="px-3 py-2 text-xs text-red-500 hover:text-white font-bold"
+                                            className="px-3 py-2 text-xs text-gray-400 hover:text-red-500 font-bold"
                                         >
                                             ✕
                                         </button>
@@ -133,57 +133,51 @@ export default function TaskController() {
                     </div>
                 </div>
 
-                <div className="flex flex-col gap-2">
-                    <label className="text-[10px] opacity-70 uppercase tracking-wider font-bold text-[var(--text-color)]">TASK (S)</label>
-                    <div className="flex items-center">
-                        <input
-                            value={taskName}
-                            onChange={(e) => setTaskName(e.target.value)}
-                            className="bg-[var(--bg-color)] w-full text-lg outline-none text-[var(--text-color)] border-2 border-[var(--text-color)] px-3 py-2 placeholder:opacity-30"
-                            placeholder="Fix UI Layout..."
-                            onKeyDown={(e) => e.key === 'Enter' && handleStart()}
-                        />
-                    </div>
+                <div className="flex flex-col gap-1">
+                    <label className="text-xs text-gray-500 font-mono">TASK (S)</label>
+                    <input
+                        value={taskName}
+                        onChange={(e) => setTaskName(e.target.value)}
+                        className="os-input text-lg"
+                        placeholder="Fix UI Layout..."
+                        onKeyDown={(e) => e.key === 'Enter' && handleStart()}
+                    />
                 </div>
 
                 <button
                     onClick={handleStart}
-                    className={`w-full font-bold py-4 mt-2 bg-[var(--accent-primary)] text-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all uppercase tracking-widest text-sm relative overflow-hidden group ${activeTask
-                        ? 'opacity-50 cursor-not-allowed'
-                        : ''
+                    className={`w-full font-bold py-3 mt-2 hover:opacity-90 transition-opacity border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-1 active:shadow-none ${activeTask
+                        ? 'bg-gray-200 text-black'
+                        : 'bg-[var(--accent-magenta)] text-white'
                         }`}
                 >
-                    <span className="relative z-10">{activeTask ? 'SYSTEM_BUSY' : 'START_LOGGING'}</span>
+                    {activeTask ? 'ADD_TO_QUEUE' : 'START_LOGGING'}
                 </button>
             </div>
 
             {/* 2. Active Task Status (If running) */}
             {activeTask && (
-                <div className="flex-1 flex flex-col justify-between p-6 border border-[var(--accent-primary)] bg-[var(--window-bg)] shadow-[var(--box-shadow-glow)] animate-in slide-in-from-left duration-500">
+                <div className="os-window bg-[#E0E0E5] border-2 border-[var(--accent-cyan)] flex-1 flex flex-col justify-between p-6 animate-in slide-in-from-left duration-300">
                     <div>
-                        <div className="flex justify-between items-start mb-4 border-b border-[var(--accent-primary)] pb-2">
-                            <span className="bg-[var(--accent-primary)] text-[var(--bg-color)] text-[10px] px-2 py-1 font-bold">PID: {activeTask.id.slice(0, 4)}</span>
-                            <div className="animate-pulse w-2 h-2 bg-[var(--accent-primary)]"></div>
+                        <div className="flex justify-between items-start mb-4">
+                            <span className="bg-black text-[var(--accent-cyan)] text-xs px-2 py-1 font-mono">ACTIVE_PROCESS_ID: {activeTask.id.slice(0, 4)}</span>
+                            <div className="animate-pulse w-3 h-3 bg-red-500 rounded-full"></div>
                         </div>
 
-                        <h3 className="text-[var(--accent-primary)] opacity-80 text-xs font-bold uppercase mb-2">
-                            {activeTask.project} // {activeTask.category}
-                        </h3>
-                        <h1 className="text-2xl font-bold leading-tight mb-6 text-[var(--text-color)]">
-                            {activeTask.name}
-                        </h1>
+                        <h3 className="text-gray-500 text-sm font-bold uppercase mb-1">{activeTask.project} / {activeTask.category}</h3>
+                        <h1 className="text-3xl font-black leading-tight mb-6">{activeTask.name}</h1>
                     </div>
 
                     <div>
-                        <div className="text-5xl font-mono font-bold tracking-tighter mb-6 tabular-nums text-[var(--accent-primary)] glitch-hover">
+                        <div className="text-6xl font-mono font-bold tracking-tighter mb-6 tabular-nums">
                             {formatTime(elapsed)}
                         </div>
 
                         <button
                             onClick={finishCurrentTask}
-                            className="w-full bg-transparent text-[var(--accent-primary)] border border-[var(--accent-primary)] font-bold text-sm py-4 hover:bg-[var(--accent-primary)] hover:text-[var(--bg-color)] transition-all shadow-[var(--box-shadow-glow)] uppercase tracking-[0.2em]"
+                            className="w-full bg-[var(--neon-yellow)] text-black border-2 border-black font-black text-xl py-4 hover:brightness-110 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-1 active:shadow-none"
                         >
-                            TERMINATE_PROCESS
+                            DONE!!!
                         </button>
                     </div>
                 </div>
@@ -191,9 +185,9 @@ export default function TaskController() {
 
             {/* Placeholder if no active task */}
             {!activeTask && (
-                <div className="flex-1 flex items-center justify-center p-6 border border-dashed border-[var(--grid-color)] opacity-30">
-                    <p className="font-mono text-sm text-center">
-                        [IDLE_STATE]<br />
+                <div className="os-window bg-gray-100 flex-1 flex items-center justify-center p-6 border-dashed border-2 border-gray-300">
+                    <p className="text-gray-400 font-mono text-sm text-center">
+                        NO_ACTIVE_PROCESS<br />
                         AWAITING_INPUT...
                     </p>
                 </div>
