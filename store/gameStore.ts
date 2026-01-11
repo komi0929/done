@@ -187,7 +187,7 @@ export const useGameStore = create<GameState>()(
                     .order('completed_at', { ascending: true }); // oldest first to stack up? or newest? Stack usually builds up. 
 
                 if (!error && data) {
-                    const tasks: CompletedTask[] = data.map((t: any) => ({
+                    const tasks: CompletedTask[] = data.map((t: { id: string; title: string; duration: number; completed_at: string }) => ({
                         id: t.id,
                         name: t.title,
                         project: 'Archived', // Schema didn't have project/category yet, maybe add later or default

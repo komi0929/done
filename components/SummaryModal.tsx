@@ -96,7 +96,7 @@ export default function SummaryModal({ isOpen, onClose }: SummaryModalProps) {
                         <div className="text-right">
                             <div className="text-xs opacity-50">SESSION_ID</div>
                             <div className="font-bold text-[var(--accent-primary)]">
-                                {user ? user.id.slice(0, 8).toUpperCase() : Date.now().toString().slice(-8)}
+                                {user ? user.id.slice(0, 8).toUpperCase() : 'GUEST_01'}
                             </div>
                         </div>
                     </div>
@@ -161,7 +161,7 @@ export default function SummaryModal({ isOpen, onClose }: SummaryModalProps) {
                         {/* Completed Task List */}
                         <div className="border border-[var(--grid-color)] p-4">
                             <h3 className="font-bold text-xs mb-4 border-b border-[var(--grid-color)] pb-2 text-[var(--text-color)]">
-                                TODAY'S_LOG ({todaysTasks.length})
+                                TODAY&apos;S_LOG ({todaysTasks.length})
                             </h3>
                             {todaysTasks.length === 0 ? (
                                 <p className="opacity-50 text-center py-8 text-xs">NO_DATA_AVAILABLE</p>

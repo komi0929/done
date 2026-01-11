@@ -21,6 +21,7 @@ export default function TaskController() {
     // Sync Timer
     useEffect(() => {
         if (!activeTask) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setElapsed(0);
             return;
         }

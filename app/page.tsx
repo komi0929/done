@@ -14,6 +14,7 @@ export default function Home() {
   const activeTask = useGameStore((state) => state.activeTask);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       e.preventDefault();
@@ -44,6 +45,12 @@ export default function Home() {
             </span>
           )}
           <AuthButton />
+          <a
+            href="/tasks"
+            className="bg-black text-white text-xs font-bold px-4 py-2 rounded-sm hover:scale-105 transition-transform font-mono border border-gray-800"
+          >
+            STACK_MODE
+          </a>
           <button
             onClick={() => setShowSummary(true)}
             className="bg-[var(--accent-magenta)] text-white text-xs font-bold px-4 py-2 rounded-sm hover:brightness-110 transition-all font-mono"

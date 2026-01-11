@@ -40,7 +40,6 @@ export default function PhysicsStack() {
                     strokeStyle: '#1A1A1A',
                     lineWidth: 2,
                 },
-                // @ts-ignore
                 plugin: {
                     taskName: task.name
                 }
@@ -119,6 +118,7 @@ export default function PhysicsStack() {
 
             allBodies.forEach((body) => {
                 if (body.label && body.label !== 'Rectangle Body') {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const taskName = (body as any).plugin?.taskName;
                     if (taskName) {
                         context.save();

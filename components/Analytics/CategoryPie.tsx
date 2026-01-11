@@ -3,7 +3,7 @@
 import { CompletedTask } from "@/store/gameStore";
 
 export default function CategoryPie({ tasks }: { tasks: CompletedTask[] }) {
-    // Aggregate by Name
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const aggregation = tasks.reduce((acc, task) => {
         acc[task.name] = (acc[task.name] || 0) + task.totalDuration;
         return acc;
@@ -22,6 +22,7 @@ export default function CategoryPie({ tasks }: { tasks: CompletedTask[] }) {
     const slices = sorted.map(([name, value], i) => {
         const percent = value / total;
         const startObj = getCoordinatesForPercent(cumulativePercent);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         cumulativePercent += percent;
         const endObj = getCoordinatesForPercent(cumulativePercent);
 

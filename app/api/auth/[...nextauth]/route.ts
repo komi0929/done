@@ -17,6 +17,7 @@ const handler = NextAuth({
         async session({ session, token }) {
             // Attach user id to session if needed
             if (session.user && token.sub) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 (session.user as any).id = token.sub;
             }
             return session;

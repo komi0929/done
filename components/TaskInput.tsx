@@ -85,7 +85,7 @@ export default function TaskInput() {
 
             {/* Helper Text */}
             <div className="mt-2 text-[10px] text-[var(--neon-green)] opacity-40">
-                // PRESS ENTER TO EXECUTE
+                {`// PRESS ENTER TO EXECUTE`}
             </div>
         </div>
     );

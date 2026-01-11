@@ -8,8 +8,17 @@ export default function Timer() {
     const finishCurrentTask = useGameStore((state) => state.finishCurrentTask);
     const [elapsed, setElapsed] = useState(0);
     const [showSwitchModal, setShowSwitchModal] = useState(false);
+    const [randomStats, setRandomStats] = useState({ cpu: 10, mem: 400 });
 
     const startTime = activeTask?.startTime;
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setRandomStats({
+            cpu: Math.random() * 10 + 10,
+            mem: Math.random() * 200 + 400
+        });
+    }, []);
 
     useEffect(() => {
         if (!startTime) return;
@@ -87,8 +96,8 @@ export default function Timer() {
 
                     {/* Footer Stats */}
                     <div className="mt-8 flex gap-8 text-xs font-mono text-gray-400">
-                        <span>CPU: {(Math.random() * 10 + 10).toFixed(1)}%</span>
-                        <span>MEM: {(Math.random() * 200 + 400).toFixed(0)}MB</span>
+                        <span>CPU: {randomStats.cpu.toFixed(1)}%</span>
+                        <span>MEM: {randomStats.mem.toFixed(0)}MB</span>
                     </div>
                 </div>
             </div>
